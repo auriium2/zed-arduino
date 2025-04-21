@@ -1,0 +1,15 @@
+id = "arduino"
+name = "Arduino Language Support"
+version = "0.0.1"
+schema_version = 1
+authors = ["Derock Xie <derock@derock.dev>"]
+description = "Adds support for the Arduino language server."
+repository = "https://github.com/itzderock/zed-arduino"
+
+[language_servers.arduino-language-server]
+name = "Arduino Language Server"
+languages = ["Arduino"]
+
+[grammars.arduino]
+repository = "https://github.com/tree-sitter-grammars/tree-sitter-arduino"
+commit = "017696bdf47ca2b10948c5a511f9ab387722d0f3"
