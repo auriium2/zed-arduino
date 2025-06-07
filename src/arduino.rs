@@ -163,6 +163,34 @@ impl zed::Extension for ArduinoExtension {
         // Check if the user already specified the -clangd flag in settings
         let user_specified_clangd = args.iter().any(|arg| arg == "-clangd");
         let user_specified_cli = args.iter().any(|arg| arg == "-cli");
+        let user_specified_cli_config = args.iter().any(|arg| arg == "-cli-config");
+
+        if !user_specified_cli_config {
+            // Set the default cli-config path based on OS
+            let cli_config_path = match zed::current_platform().0 {
+                zed::Os::Mac => {
+                    let home = std::env::home_dir().expect("Failed to get home directory");
+                    home.join("Library/Arduino15/arduino-cli.yaml")
+                }
+                zed::Os::Linux => {
+                    let home = std::env::home_dir().expect("Failed to get home directory");
+                    home.join(".arduino15/arduino-cli.yaml")
+                }
+                zed::Os::Windows => {
+                    let local_app_data =
+                        std::env::var("LOCALAPPDATA").expect("LOCALAPPDATA not found");
+
+                    let mut path = std::path::PathBuf::from(&local_app_data);
+                    path.push("Arduino15");
+                    path.push("arduino-cli.yaml");
+                    path
+                }
+            };
+            if cli_config_path.exists() {
+                args.push("-cli-config".to_string());
+                args.push(cli_config_path.to_string_lossy().to_string());
+            }
+        }
 
         if !user_specified_clangd {
             // User did not specify -clangd, try to find it automatically
